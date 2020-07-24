@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.IAccountDao">
+    <!--设置二级缓存第二步-->
+    <cache/>
+    <!--定义封装account和user的resultMap-->
+    <resultMap id="accountUserMap" type="account">
+        <id property="id" column="ID"/>
+        <result property="uid" column="UID"/>
+        <result property="money" column="MONEY"/>
+        <!--通过外键UID获得对应表中的user对象,因此column属性值为外键UID-->
+        <association property="user" column="UID" javaType="user">
+            <!--一对一的关系映射,配置封装user的内容-->
+            <id property="id" column="id"></id>
+            <result property="username" column="username"></result>
+            <result property="address" column="address"></result>
+            <result property="sex" column="sex"></result>
+            <result property="birthday" column="birthday"></result>
+        </association>
+    </resultMap>
+    <!--开启二级缓存第三步,设置useCache属性-->
+    <select id="findAll" resultMap="accountUserMap" useCache="true">
+        select u.*,a.UID,a.MONEY from account a,user u where a.UID = u.id;
+    </select>
+
+    <select id="findUserById" parameterType="java.lang.Integer" resultType="user" useCache="true">
+        select * from user where id = #{id};
+    </select>
+</mapper>
